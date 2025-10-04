@@ -30,3 +30,10 @@ int classify_threat(const float* image_data, const float* audio_data, size_t len
 
     return final_score > 5.0f ? 1 : 0;  // 1 = threat detected
 }
+//Add to the same file binding with pybind11
+m.def("classify_threat", [](py::array_t<float> image_data, py::array_t<float> audio_data) {
+    auto img_buf = image_data.request();
+    auto aud_buf = audio_data.request();
+    if (img_buf.size != aud_buf.size) throw std::runtime_error("Input sizes mismatch");
+    return classify_threat(static_cast<float*>(img_buf.ptr), static_cast<float*>(aud_buf.ptr), img_buf.size);
+});
